@@ -67,15 +67,15 @@ class SearchSolution(Base):
         base_speed = T_base / N
         print(f"Base Line Speed: {base_speed}")
         print(f"Base Line Accuracy: {C / N * 100}")
-        with open(base_speed_path, 'wb') as f:
-            pickle.dump(base_speed, f)
+        # with open(base_speed_path, 'wb') as f:
+        #     pickle.dump(base_speed, f)
  
     def search(self, query: np.array) -> List[Tuple]:
         #print(query)
-        self.index.nprobe = 32 
+        self.index.nprobe = 100
         tmp = np.zeros((1, len(query)), dtype='float32')
         tmp[0] = np.array(query)
-        D, I = self.index.search(tmp, 5)
+        D, I = self.index.search(tmp, 1000)
         return [(I[0][i], D[0][i]) for i in range(len(D))]
  
     def insert_base(self, feature: np.array) -> None:
