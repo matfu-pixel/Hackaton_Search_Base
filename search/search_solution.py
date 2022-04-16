@@ -43,39 +43,12 @@ class SearchSolution(Base):
         self.index.add(self.reg_matrix.astype('float32'))
         print(self.index.ntotal)
  
-    def cal_base_speed(self, base_speed_path='./base_speed.pickle') -> float:
-        samples = cfg.samples
-        N, C, C_time, T_base = 0, 0, 0, 0
-        for i, tup in enumerate(tqdm(self.pass_dict.items(), total=samples)):
- 
-            idx, passes = tup
-            for q  in passes:
-                t0 = time.time()
-                c_output = self.search(query=q)
-                t1 = time.time()
-                T_base += (t1 - t0)
- 
-                C_set = [True for tup in c_output if tup[0] == idx]
-                if len(C_set):
-                    C += 1
-                    C_time += (t1 - t0)
-                N += 1
- 
-            if i > samples:
-                break
- 
-        base_speed = T_base / N
-        print(f"Base Line Speed: {base_speed}")
-        print(f"Base Line Accuracy: {C / N * 100}")
-        # with open(base_speed_path, 'wb') as f:
-        #     pickle.dump(base_speed, f)
- 
     def search(self, query: np.array) -> List[Tuple]:
         #print(query)
-        self.index.nprobe = 100
+        self.index.nprobe = 200
         tmp = np.zeros((1, len(query)), dtype='float32')
         tmp[0] = np.array(query)
-        D, I = self.index.search(tmp, 1000)
+        D, I = self.index.search(tmp, 5)
         return [(I[0][i], D[0][i]) for i in range(len(D))]
  
     def insert_base(self, feature: np.array) -> None:
